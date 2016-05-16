@@ -1,0 +1,1 @@
+sidebarNodes={"exceptions":[],"extras":[{"id":"api-reference","title":"API Reference","headers":[]}],"modules":[{"id":"Curl2HTTPoison","title":"Curl2HTTPoison","functions":[{"id":"parse_curl/1","anchor":"parse_curl/1"}]}],"protocols":[]}
