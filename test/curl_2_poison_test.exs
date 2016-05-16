@@ -30,4 +30,6 @@ defmodule Curl2HTTPoisonTest do
     code = Curl2HTTPoison.parse_curl(@curl2 |> String.strip)
     assert code == @correct_response2
   end
+
+
 end

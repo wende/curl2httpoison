@@ -6,6 +6,7 @@ defmodule Curl_2Poison.Mixfile do
      version: "0.0.1",
      description: "Curl2HTTPoison transform your curl request to HTTPPoison request code",
      elixir: "~> 1.2",
+     aliases: aliases,
      package: package,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -35,5 +36,15 @@ defmodule Curl_2Poison.Mixfile do
     [ maintainers: ["Krzysztof Wende"],
       licenses: ["MIT"],
       links: %{"Github" => "https://github.com/edgurgel/httpoison"} ]
+  end
+
+  defp aliases do
+    [curl2http: &curl2http/1]
+  end
+
+  defp curl2http(args) do
+    Mix.shell(Mix.Shell.Process)
+    Mix.Tasks.Compile.run([])
+    IO.puts Curl2HTTPoison.parse_curl(Enum.join(args, " "))
   end
 end

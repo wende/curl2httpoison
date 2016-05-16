@@ -20,7 +20,7 @@ defmodule Curl2HTTPoison do
   iex> Curl2HTTPoison.parse_curl("curl -X POST http://google.pl")
   "request(:post, \\"http://google.pl\\", \\"\\", [], [])\n"
   """
-  @spec parse_curl(string) :: string
+  @spec parse_curl(String.t()) :: String.t()
   def parse_curl(curl) when is_list(curl) do
     parse_curl(List.to_string(curl))
   end
@@ -36,7 +36,7 @@ defmodule Curl2HTTPoison do
     produce_code(method, url, body, headers)
   end
 
-  defp produce_code(method, url, body, headers \\ []) do
+  defp produce_code(method, url, body, headers) do
     """
     request(:#{method}, "#{url}", "#{body}", #{inspect(headers)}, [])
     """
