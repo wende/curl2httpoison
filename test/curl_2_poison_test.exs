@@ -1,6 +1,8 @@
-defmodule Curl2HTTPoisonTest do
+defmodule Curl2httpoisonTest do
   use ExUnit.Case
-  doctest Curl2HTTPoison
+  alias Mix.Tasks.Curl2httpoison
+
+  doctest Mix.Tasks.Curl2httpoison
 
   @url "http://google.pl"
   @header1 "Accept:application/json"
@@ -22,12 +24,12 @@ defmodule Curl2HTTPoisonTest do
   """
 
   test "parse curl" do
-    code = Curl2HTTPoison.parse_curl(@curl1 |> String.strip)
+    code = Curl2httpoison.parse_curl(@curl1 |> String.strip)
     assert code == @correct_response1
   end
 
   test "defaults data" do
-    code = Curl2HTTPoison.parse_curl(@curl2 |> String.strip)
+    code = Curl2httpoison.parse_curl(@curl2 |> String.strip)
     assert code == @correct_response2
   end
 

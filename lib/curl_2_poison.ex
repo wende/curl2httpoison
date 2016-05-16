@@ -1,6 +1,8 @@
-defmodule Curl2HTTPoison do
+defmodule Mix.Tasks.Curl2httpoison do
+  use Mix.Task
+
   @moduledoc """
-  Curl2HTTPoison is a module used for converting curl request string to
+  Curl2httpoison is a module used for converting curl request string to
   HTTPPoison call.
   """
 
@@ -13,11 +15,16 @@ defmodule Curl2HTTPoison do
       X: :method
     ]
   ]
-  
+
+  @doc false
+  def run(args) do
+    Mix.shell.info parse_curl(Enum.join(args, " "))
+  end
+
   @doc """
   Convert curl string to HTTPPoison call
   ## Example
-  iex> Curl2HTTPoison.parse_curl("curl -X POST http://google.pl")
+  iex> Curl2httpoison.parse_curl("curl -X POST http://google.pl")
   "request(:post, \\"http://google.pl\\", \\"\\", [], [])\n"
   """
   @spec parse_curl(String.t()) :: String.t()
