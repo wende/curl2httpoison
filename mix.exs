@@ -4,6 +4,7 @@ defmodule Curl_2Poison.Mixfile do
   def project do
     [app: :curl_2_poison,
      version: "0.0.1",
+     description: "Curl2Poison transform your curl request to HTTPPoison request code",
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
