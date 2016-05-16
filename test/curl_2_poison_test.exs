@@ -1,8 +1,7 @@
 defmodule Curl2httpoisonTest do
   use ExUnit.Case
-  alias Mix.Tasks.Curl2httpoison
 
-  doctest Mix.Tasks.Curl2httpoison
+  doctest Curl2httpoison
 
   @url "http://google.pl"
   @header1 "Accept:application/json"
@@ -24,14 +23,48 @@ defmodule Curl2httpoisonTest do
   """
 
   test "parse curl" do
-    code = Curl2httpoison.parse_curl(@curl1 |> String.strip)
+    code = (@curl1 |> String.strip)
+    |> Curl2httpoison.parse_curl
+    |> Curl2httpoison.produce_code
     assert code == @correct_response1
   end
 
   test "defaults data" do
-    code = Curl2httpoison.parse_curl(@curl2 |> String.strip)
+    code = (@curl2 |> String.strip)
+    |> Curl2httpoison.parse_curl
+    |> Curl2httpoison.produce_code
     assert code == @correct_response2
   end
 
+  test "finds common root" do
+   assert Curl2httpoison.common_root([
+      "aaaa",
+      "aabb",
+      "aacc",
+      "aaae"
+    ]) == "aa"
+  end
 
+  test "makes a whole file" do
+    out = Curl2httpoison.gen([name: @curl1], "SomeModule")
+    assert out == """
+    defmodule SomeModule do
+      use HTTPoison.Base
+
+      @endpoint ""
+
+      def process_url(url), do: endpoint <> url
+
+      def name() do
+        #{@correct_response1 |> String.strip()}
+      end
+    end
+    """
+  end
+
+  test "Works on files too" do
+    Curl2httpoison.gen_file("test/dummydata.ex", "test/dummymodule.ex")
+    assert File.exists?("test/dummymodule.ex")
+    File.rm!("test/dummymodule.ex")
+  end
 end
