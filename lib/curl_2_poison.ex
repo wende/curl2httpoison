@@ -1,6 +1,6 @@
-defmodule Curl2Poison do
+defmodule Curl2HTTPoison do
   @moduledoc """
-  Curl2Poison is a module used for converting curl request string to
+  Curl2HTTPoison is a module used for converting curl request string to
   HTTPPoison call.
   """
 
@@ -17,7 +17,7 @@ defmodule Curl2Poison do
   @doc """
   Convert curl string to HTTPPoison call
   ## Example
-  iex> Curl2Poison.parse_curl("curl -X POST http://google.pl")
+  iex> Curl2HTTPoison.parse_curl("curl -X POST http://google.pl")
   "request(:post, \\"http://google.pl\\", \\"\\", [], [])\n"
   """
   @spec parse_curl(string) :: string

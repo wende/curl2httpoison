@@ -1,6 +1,6 @@
-defmodule Curl2PoisonTest do
+defmodule Curl2HTTPoisonTest do
   use ExUnit.Case
-  doctest Curl2Poison
+  doctest Curl2HTTPoison
 
   @url "http://google.pl"
   @header1 "Accept:application/json"
@@ -22,12 +22,12 @@ defmodule Curl2PoisonTest do
   """
 
   test "parse curl" do
-    code = Curl2Poison.parse_curl(@curl1 |> String.strip)
+    code = Curl2HTTPoison.parse_curl(@curl1 |> String.strip)
     assert code == @correct_response1
   end
 
   test "defaults data" do
-    code = Curl2Poison.parse_curl(@curl2 |> String.strip)
+    code = Curl2HTTPoison.parse_curl(@curl2 |> String.strip)
     assert code == @correct_response2
   end
 end
