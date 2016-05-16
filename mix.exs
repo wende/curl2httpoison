@@ -6,6 +6,7 @@ defmodule Curl_2Poison.Mixfile do
      version: "0.0.1",
      description: "Curl2HTTPoison transform your curl request to HTTPPoison request code",
      elixir: "~> 1.2",
+     package: package,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
@@ -29,5 +30,10 @@ defmodule Curl_2Poison.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     []
+  end
+  defp package do
+    [ maintainers: ["Krzysztof Wende"],
+      licenses: ["MIT"],
+      links: %{"Github" => "https://github.com/edgurgel/httpoison"} ]
   end
 end
