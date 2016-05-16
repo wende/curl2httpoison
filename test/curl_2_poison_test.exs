@@ -21,13 +21,13 @@ defmodule Curl2PoisonTest do
   request(:get, "#{@url}", "", ["#{@header1}", "#{@header2}"], [])
   """
 
-  test "feed curl" do
-    code = Curl2Poison.feed_curl(@curl1 |> String.strip)
+  test "parse curl" do
+    code = Curl2Poison.parse_curl(@curl1 |> String.strip)
     assert code == @correct_response1
   end
 
   test "defaults data" do
-    code = Curl2Poison.feed_curl(@curl2 |> String.strip)
+    code = Curl2Poison.parse_curl(@curl2 |> String.strip)
     assert code == @correct_response2
   end
 end

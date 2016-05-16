@@ -1,5 +1,8 @@
 defmodule Curl2Poison do
-  @moduledoc false
+  @moduledoc """
+  Curl2Poison is a module used for converting curl request string to
+  HTTPPoison call.
+  """
 
   @opts [
     switches: [
@@ -10,11 +13,18 @@ defmodule Curl2Poison do
       X: :method
     ]
   ]
-
-  def feed_curl(curl) when is_list(curl) do
-    feed_curl(List.to_string(curl))
+  
+  @doc """
+  Convert curl string to HTTPPoison call
+  ## Example
+  iex> Curl2Poison.parse_curl("curl -X POST http://google.pl")
+  "request(:post, \\"http://google.pl\\", \\"\\", [], [])\n"
+  """
+  @spec parse_curl(string) :: string
+  def parse_curl(curl) when is_list(curl) do
+    parse_curl(List.to_string(curl))
   end
-  def feed_curl(curl) do
+  def parse_curl(curl) do
     {keys, ["curl", url], []} = curl
     |> OptionParser.split()
     |> OptionParser.parse(@opts)
@@ -26,7 +36,7 @@ defmodule Curl2Poison do
     produce_code(method, url, body, headers)
   end
 
-  def produce_code(method, url, body, headers \\ []) do
+  defp produce_code(method, url, body, headers \\ []) do
     """
     request(:#{method}, "#{url}", "#{body}", #{inspect(headers)}, [])
     """
