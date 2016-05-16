@@ -65,6 +65,7 @@ defmodule Curl2httpoisonTest do
   test "Works on files too" do
     Curl2httpoison.gen_file("test/dummydata.ex", "test/dummymodule.ex")
     assert File.exists?("test/dummymodule.ex")
+    IO.puts File.read! "test/dummymodule.ex"
     File.rm!("test/dummymodule.ex")
   end
 end
