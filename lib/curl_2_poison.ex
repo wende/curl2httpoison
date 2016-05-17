@@ -34,7 +34,11 @@ defmodule Curl2httpoison do
     |> OptionParser.parse(@opts)
 
     headers = Keyword.get_values(keys, :header)
-    method = Keyword.get(keys, :method) |> String.downcase |> String.to_atom
+    method = keys
+    |> Keyword.get(:method)
+    |> Kernel.||("GET")
+    |> String.downcase
+    |> String.to_atom
     body = Keyword.get(keys, :body) || ""
 
     {method, url, body, headers}
@@ -47,29 +51,34 @@ defmodule Curl2httpoison do
   "request(:post, \\"http://google.pl\\", \\"\\", [], [])\n"
   """
   def produce_code({method, url, body, headers}) do
+    headers = headers
+    |> Enum.map(&"\"#{&1}\"")
+    |> Enum.join(", ")
     """
-    request(:#{method}, "#{url}", "#{body}", #{inspect(headers)}, [])
+    request(:#{method}, "#{url}", "#{body}", [#{headers}], [])
     """
   end
 
-  def gen_file(inputfile, outputfile) do
+  def gen_file(inputfile, outputfile, force) do
     filename = String.replace(outputfile, ~r/\.ex$/, "")
     modulename = Mix.Utils.camelize(filename)
 
     output = inputfile
     |> read_from
     |> gen(modulename)
-    Mix.Generator.create_file(filename <> ".ex", output)
+    Mix.Generator.create_file(filename <> ".ex", output, [force: force])
   end
 
   def gen(curls, name) do
     endpoint = curls
     |> Enum.map(&elem(&1, 1))
+    |> Enum.map(fn curl -> parse_curl(curl) end)
+    |> Enum.map(&elem(&1, 1))
     |> common_root()
 
     methods = curls
-    |> Enum.map(fn {a, b} -> gen_def(a,b) end)
-    |> Enum.join("\n")
+    |> Enum.map(fn {a, b} -> gen_def(a,b, endpoint) end)
+    |> Enum.join("\n\n")
     |> String.split("\n")
     |> Enum.map(&("  " <> &1))
     |> Enum.join("\n")
@@ -85,10 +94,35 @@ defmodule Curl2httpoison do
     """  <> methods <> "\nend\n"
   end
 
-  def gen_def(name, curl) do
+  def gen_def(name, curl, endpoint \\ "") do
+    curl = curl |> parse_curl
+    {m, url, body, hs} = curl
+
+    url = if endpoint != "" do
+      String.replace(url, endpoint, "")
+    else
+      url
+    end
+
+    {url_params, argumentized_url} = get_arguments(url)
+    {body_params, argumentized_body} = get_arguments(body)
+
+    hs = hs
+    |> Enum.map(fn header -> get_arguments(header) end)
+
+    hs_params = hs
+    |> Enum.reduce([], fn {params, _}, acc -> params ++ acc end)
+
+    arg_hs = hs
+    |> Enum.map(&elem(&1, 1))
+
+    curl = {m, argumentized_url, argumentized_body, arg_hs}
+    code = curl |> produce_code |> String.strip
+
+    args = Enum.join(body_params ++ url_params ++ hs_params, ", ")
     """
-    def #{name}() do
-      #{curl |> parse_curl |> produce_code |> String.strip}
+    def #{name}(#{args}) do
+      #{code}
     end
     """ |> String.strip
   end
@@ -101,6 +135,7 @@ defmodule Curl2httpoison do
 
   def common_root(xs, root \\ ""), do: common_root(xs, root, String.length(root))
   def common_root([_], _, _), do: ""
+  def common_root([h | _], root, length) when h == root, do: root
   def common_root([h | _] = xs, root, length) do
     newroot = elem(String.split_at(h, length + 1), 0)
     if Enum.all?(xs, &String.starts_with?(&1, newroot)) do
@@ -108,5 +143,17 @@ defmodule Curl2httpoison do
     else
       root
     end
+  end
+
+  @argregex ~r/\{\w+\}/
+  def get_arguments(string) do
+    argumentized = string
+    |> String.replace(@argregex, "#\\g{0}")
+
+    params = (Regex.scan(@argregex, string) || [])
+    |> List.flatten
+    |> Enum.map(fn a -> Regex.run(~r/\w+/, a) |> hd end)
+
+    {params, argumentized}
   end
 end

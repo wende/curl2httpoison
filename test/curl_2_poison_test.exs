@@ -22,18 +22,29 @@ defmodule Curl2httpoisonTest do
   request(:get, "#{@url}", "", ["#{@header1}", "#{@header2}"], [])
   """
 
+  @arg_curl """
+  curl -X GET --header "#{@header1}" --header "AUTH:{auth}" #{@url} -d "{body}"
+  """
+
+  @arg_resp """
+  request(:get, "#{@url}", "\#{body}", ["#{@header1}", "AUTH:\#{auth}"], [])
+  """
+
+
   test "parse curl" do
-    code = (@curl1 |> String.strip)
-    |> Curl2httpoison.parse_curl
-    |> Curl2httpoison.produce_code
-    assert code == @correct_response1
+    compare(@curl1, @correct_response1)
   end
 
   test "defaults data" do
-    code = (@curl2 |> String.strip)
+    compare(@curl2, @correct_response2)
+  end
+
+
+  defp compare(curl, resp) do
+    code = (curl |> String.strip)
     |> Curl2httpoison.parse_curl
     |> Curl2httpoison.produce_code
-    assert code == @correct_response2
+    assert code == resp
   end
 
   test "finds common root" do
@@ -68,4 +79,25 @@ defmodule Curl2httpoisonTest do
     IO.puts File.read! "test/dummymodule.ex"
     File.rm!("test/dummymodule.ex")
   end
+
+  test "Argumentizes strings" do
+    out = "Hello {world}"
+    |> Curl2httpoison.get_arguments
+    assert out == {["world"], "Hello \#{world}"}
+
+    out2 = "AUTH:{authtoken}"
+    |> Curl2httpoison.get_arguments
+    assert out2 == {["authtoken"], "AUTH:\#{authtoken}"}
+
+  end
+
+  test "Argumentized gen_def" do
+    code = Curl2httpoison.gen_def("name", @arg_curl)
+    assert code == String.strip("""
+    def name(body, auth) do
+      #{@arg_resp |> String.strip}
+    end
+    """) 
+  end
+
 end
