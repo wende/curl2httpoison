@@ -69,6 +69,12 @@ defmodule Curl2httpoisonTest do
       def name() do
         #{@correct_response1 |> String.strip()}
       end
+      def name!() do
+        case name() do
+          {:ok, response} -> response
+          {:error, error} -> raise error
+        end
+      end
     end
     """
   end
@@ -88,7 +94,6 @@ defmodule Curl2httpoisonTest do
     out2 = "AUTH:{authtoken}"
     |> Curl2httpoison.get_arguments
     assert out2 == {["authtoken"], "AUTH:\#{authtoken}"}
-
   end
 
   test "Argumentized gen_def" do
@@ -97,7 +102,13 @@ defmodule Curl2httpoisonTest do
     def name(body, auth) do
       #{@arg_resp |> String.strip}
     end
-    """) 
+    def name!(body, auth) do
+      case name(body, auth) do
+        {:ok, response} -> response
+        {:error, error} -> raise error
+      end
+    end
+    """)
   end
 
 end

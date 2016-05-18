@@ -124,6 +124,12 @@ defmodule Curl2httpoison do
     def #{name}(#{args}) do
       #{code}
     end
+    def #{name}!(#{args}) do
+      case #{name}(#{args}) do
+        {:ok, response} -> response
+        {:error, error} -> raise error
+      end
+    end
     """ |> String.strip
   end
 
