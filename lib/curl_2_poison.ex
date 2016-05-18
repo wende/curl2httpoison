@@ -27,20 +27,21 @@ defmodule Curl2httpoison do
     curl
     |> List.to_string
     |> parse_curl
-    |> produce_code
   end
   def parse_curl(curl) do
-    {keys, ["curl", url], []} = curl
-    |> String.strip
-    |> OptionParser.split()
-    |> OptionParser.parse(@opts)
+    {keys, ["curl", url], []} =
+      curl
+      |> String.strip
+      |> OptionParser.split()
+      |> OptionParser.parse(@opts)
 
     headers = Keyword.get_values(keys, :header)
-    method = keys
-    |> Keyword.get(:method)
-    |> Kernel.||("GET")
-    |> String.downcase
-    |> String.to_atom
+    method =
+      keys
+      |> Keyword.get(:method)
+      |> Kernel.||("GET")
+      |> String.downcase
+      |> String.to_atom
     body = Keyword.get(keys, :body) || ""
 
     {method, url, body, headers}
@@ -53,11 +54,15 @@ defmodule Curl2httpoison do
   "request(:post, \\"http://google.pl\\", \\"\\", [], [])\n"
   """
   def produce_code({method, url, body, headers}) do
-    headers = headers
-    |> Enum.map(&"\"#{&1}\"")
-    |> Enum.join(", ")
+    headers =
+      headers
+      |> Enum.map(fn h ->
+      List.to_tuple String.split(h, ":")
+    end)
+      |> Macro.to_string
+      |> String.replace("\\", "")
     """
-    request(:#{method}, "#{url}", "#{body}", [#{headers}], [])
+    request(:#{method}, "#{url}", "#{body}", #{headers}, [])
     """
   end
 
@@ -110,7 +115,11 @@ defmodule Curl2httpoison do
     {body_params, argumentized_body} = get_arguments(body)
 
     hs = hs
-    |> Enum.map(fn header -> get_arguments(header) end)
+    |> Enum.map(&String.split(&1, ":"))
+    |> Enum.map(fn [header, val] ->
+      {params, newval} = get_arguments(val)
+      {params, header <> ":" <> newval}
+    end)
 
     hs_params = hs
     |> Enum.reduce([], fn {params, _}, acc -> params ++ acc end)

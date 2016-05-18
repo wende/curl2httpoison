@@ -4,30 +4,33 @@ defmodule Curl2httpoisonTest do
   doctest Curl2httpoison
 
   @url "http://google.pl"
-  @header1 "Accept:application/json"
-  @header2 "Content-Type:application/json"
+
+  @header1curl "Accept:application/json"
+  @header2curl "Content-Type:application/json"
+  @header1 "{\"Accept\", \"application/json\"}"
+  @header2 "{\"Content-Type\", \"application/json\"}"
   @data "{username: 'user@example.com', password: 'thepassword'}"
 
   @curl1 """
-  curl -X POST --header "#{@header1}" --header "#{@header2}" #{@url} -d "#{@data}"
+  curl -X POST --header "#{@header1curl}" --header "#{@header2curl}" #{@url} -d "#{@data}"
   """
   @correct_response1 """
-  request(:post, "#{@url}", "#{@data}", ["#{@header1}", "#{@header2}"], [])
+  request(:post, "#{@url}", "#{@data}", [#{@header1}, #{@header2}], [])
   """
 
   @curl2 """
-  curl -X GET --header "#{@header1}" --header "#{@header2}" #{@url}
+  curl -X GET --header "#{@header1curl}" --header "#{@header2curl}" #{@url}
   """
   @correct_response2 """
-  request(:get, "#{@url}", "", ["#{@header1}", "#{@header2}"], [])
+  request(:get, "#{@url}", "", [#{@header1}, #{@header2}], [])
   """
 
   @arg_curl """
-  curl -X GET --header "#{@header1}" --header "AUTH:{auth}" #{@url} -d "{body}"
+  curl -X GET --header "#{@header1curl}" --header "AUTH:{auth}" #{@url} -d "{body}"
   """
 
   @arg_resp """
-  request(:get, "#{@url}", "\#{body}", ["#{@header1}", "AUTH:\#{auth}"], [])
+  request(:get, "#{@url}", "\#{body}", [#{@header1}, {"AUTH", "\#{auth}"}], [])
   """
 
 
@@ -41,9 +44,11 @@ defmodule Curl2httpoisonTest do
 
 
   defp compare(curl, resp) do
-    code = (curl |> String.strip)
-    |> Curl2httpoison.parse_curl
-    |> Curl2httpoison.produce_code
+    code =
+      curl
+      |> String.strip
+      |> Curl2httpoison.parse_curl
+      |> Curl2httpoison.produce_code
     assert code == resp
   end
 
