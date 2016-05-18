@@ -4,4 +4,4 @@
 erl_crash.dump
 *.ez
 /doc
-test/dummymodule.ex
+/test/dummymodule.ex
