@@ -24,8 +24,10 @@ defmodule Curl2httpoison do
   """
   @spec parse_curl(String.t()) :: String.t()
   def parse_curl(curl) when is_list(curl) do
-    parse_curl(List.to_string(curl))
-    |> produce_code()
+    curl
+    |> List.to_string
+    |> parse_curl
+    |> produce_code
   end
   def parse_curl(curl) do
     {keys, ["curl", url], []} = curl
@@ -59,7 +61,7 @@ defmodule Curl2httpoison do
     """
   end
 
-  def gen_file(inputfile, outputfile, force) do
+  def gen_file(inputfile, outputfile, force \\ false) do
     filename = String.replace(outputfile, ~r/\.ex$/, "")
     modulename = Mix.Utils.camelize(filename)
 
@@ -89,7 +91,7 @@ defmodule Curl2httpoison do
 
       @endpoint "#{endpoint}"
 
-      def process_url(url), do: endpoint <> url
+      def process_url(url), do: @endpoint <> url
 
     """  <> methods <> "\nend\n"
   end
@@ -139,7 +141,7 @@ defmodule Curl2httpoison do
     |> elem(0)
   end
 
-  def common_root(xs, root \\ ""), do: common_root(xs, root, String.length(root))
+  def common_root(x, root \\ ""), do: common_root(x, root, String.length(root))
   def common_root([_], _, _), do: ""
   def common_root([h | _], root, length) when h == root, do: root
   def common_root([h | _] = xs, root, length) do
@@ -153,12 +155,16 @@ defmodule Curl2httpoison do
 
   @argregex ~r/\{\w+\}/
   def get_arguments(string) do
-    argumentized = string
-    |> String.replace(@argregex, "#\\g{0}")
+    argumentized =
+      string
+      |> String.replace(@argregex, "#\\g{0}")
 
-    params = (Regex.scan(@argregex, string) || [])
-    |> List.flatten
-    |> Enum.map(fn a -> Regex.run(~r/\w+/, a) |> hd end)
+    args = Regex.scan(@argregex, string) || []
+
+    params =
+      args
+      |> List.flatten
+      |> Enum.map(fn a -> Regex.run(~r/\w+/, a) |> hd end)
 
     {params, argumentized}
   end

@@ -64,7 +64,7 @@ defmodule Curl2httpoisonTest do
 
       @endpoint ""
 
-      def process_url(url), do: endpoint <> url
+      def process_url(url), do: @endpoint <> url
 
       def name() do
         #{@correct_response1 |> String.strip()}

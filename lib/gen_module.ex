@@ -1,7 +1,10 @@
 defmodule Mix.Tasks.Curl2httpoison.Gen do
+  @moduledoc false
 
   defmodule Module do
+    @moduledoc false
     use Mix.Task
+
     @doc false
     def run([inputfile, outputfile | t]) do
       Curl2httpoison.gen_file(inputfile, outputfile, t == ["--force"])
@@ -9,7 +12,9 @@ defmodule Mix.Tasks.Curl2httpoison.Gen do
   end
 
   defmodule Line do
+    @moduledoc false
     use Mix.Task
+
     @doc false
     def run(args) do
       out = args
