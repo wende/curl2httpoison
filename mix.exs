@@ -3,7 +3,7 @@ defmodule Curl2Poison.Mixfile do
 
   def project do
     [app: :curl2httpoison,
-     version: "0.2.3",
+     version: "0.2.6",
      description: """
      Curl2HTTPoison transform your curl request to HTTPPoison request code
      """,
