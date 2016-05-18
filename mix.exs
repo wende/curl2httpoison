@@ -37,7 +37,7 @@ defmodule Curl2Poison.Mixfile do
   defp package do
     [ maintainers: ["Krzysztof Wende"],
       licenses: ["MIT"],
-      links: %{"Github" => "https://github.com/edgurgel/httpoison"} ]
+      links: %{"Github" => "https://github.com/wende/curl2httpoison"} ]
   end
 
   defp aliases do
