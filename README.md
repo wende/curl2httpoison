@@ -4,6 +4,9 @@
 
 API generator from curl request to HTTPBase
 
+[![Video](https://img.youtube.com/vi/77INJGLP-AU/0.jpg)](https://www.youtube.com/watch?v=77INJGLP-AU)
+
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
