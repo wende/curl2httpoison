@@ -14,7 +14,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   1. Add curl_2_poison to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:curl_2_poison, "~> 0.2.6"}]
+          [{:curl2httpoison, "~> 0.2.6"}]
         end
 
   2. Run the generator with `mix curl2httpoison.gen.module inputfile.ex outputfile.ex [--force]`
