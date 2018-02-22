@@ -11,6 +11,7 @@ defmodule Curl2httpoison do
     ],
     aliases: [
       d: :body,
+      H: :header,
       X: :method
     ]
   ]
@@ -31,7 +32,8 @@ defmodule Curl2httpoison do
   def parse_curl(curl) do
     {keys, ["curl", url], []} =
       curl
-      |> String.strip
+      |> String.replace("\n", " ", parts: 2)
+      |> String.trim
       |> OptionParser.split()
       |> OptionParser.parse(@opts)
 
