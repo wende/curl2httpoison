@@ -11,6 +11,7 @@ defmodule Curl2httpoison do
     ],
     aliases: [
       d: :body,
+      H: :header,
       X: :method
     ]
   ]
