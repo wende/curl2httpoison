@@ -32,7 +32,7 @@ defmodule Curl2httpoison do
   def parse_curl(curl) do
     {keys, ["curl", url], []} =
       curl
-      |> String.strip
+      |> String.trim
       |> OptionParser.split()
       |> OptionParser.parse(@opts)
 
